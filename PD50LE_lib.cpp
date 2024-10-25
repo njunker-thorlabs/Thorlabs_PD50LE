@@ -7,43 +7,32 @@
 
 
 #include "PD50LE_lib.h"
-#include "math.h"
 
-bool Thorlabs_PD50LE::begin(uint8_t addr, I2C_HandleTypeDef i2c_instance)
+void Thorlabs_PD50LE::begin(uint8_t addr)
 {
-	_i2c_instance = i2c_instance;
 	_addr = addr;
 
 	//Set LSB to 55mV for now, will add calibration later
 	_lsb = 0.055;
 
-	HAL_StatusTypeDef ret;
-	ret = HAL_I2C_IsDeviceReady(&_i2c_instance, _addr, 3, 1000);
+	Thorlabs_I2C_setup();
 
-	if (ret != HAL_OK) {
-		return false;
-	}
-	else {
-		return true;
-	}
 }
 
 bool Thorlabs_PD50LE::write_register(uint8_t reg, uint8_t data)
 {
-	HAL_StatusTypeDef ret;
+	uint8_t ret;
 	uint8_t cmd[2];
 	//build command word
 	cmd[0] = reg;
 	cmd[1] = data;
 
-	ret = HAL_I2C_Master_Transmit(&_i2c_instance, (_addr << 1), cmd, sizeof(cmd), 1000);
+	Thorlabs_I2C_begin();
+	ret = Thorlabs_I2C_write(cmd, sizeof(cmd));
+	Thorlabs_I2C_end();
 
-	if (ret != HAL_OK) {
-		return false;
-	}
-	else {
-		return true;
-	}
+	return (ret > 0) ? false : true;
+
 }
 
 uint8_t Thorlabs_PD50LE::read_register(uint8_t reg)
@@ -52,8 +41,12 @@ uint8_t Thorlabs_PD50LE::read_register(uint8_t reg)
 	uint8_t _read_buf[1];
 	//build command word
 	cmd[0] = reg;
-	HAL_I2C_Master_Transmit(&_i2c_instance, (_addr << 1), cmd, sizeof(cmd), 100);
-	HAL_I2C_Master_Receive(&_i2c_instance, (_addr << 1), _read_buf, sizeof(_read_buf), 100);
+
+	Thorlabs_I2C_begin();
+	Thorlabs_I2C_write(cmd, sizeof(cmd));
+	Thorlabs_I2C_end();
+	Thorlabs_I2C_read(_read_buf, sizeof(_read_buf));
+	
 	return _read_buf[0];
 }
 
@@ -131,6 +124,42 @@ void Thorlabs_PD50LE::updateStatus()
 bool Thorlabs_PD50LE::resetStatus()
 {
 	return write_register(PD50LE_STATUS_REGISTER, 0x00);
+}
+
+//-----------------------------------------------------------------------
+//------------------- To be implemented by user -------------------------
+//-----------------------(Platform Specific)-----------------------------
+//-----------------------------------------------------------------------
+
+uint8_t Thorlabs_PD50LE::Thorlabs_I2C_write(uint8_t *buf, size_t size) {
+	//Implement this in a parent class or modify for your platform
+
+	//Take in an array of single bytes (buf) and length
+	//Return length of bytes successfully transmitted
+}
+
+void Thorlabs_PD50LE::Thorlabs_I2C_read(uint8_t *buf, size_t size) {
+	//Implement this in a parent class or modify for your platform
+
+	//Takes in a pointer to a buffer to place data in, and size of said buffer
+}
+
+void Thorlabs_PD50LE::Thorlabs_I2C_begin() {
+	//Implement this in a parent class or modify for your platform
+
+	//Used if your platform has an I2C transaction begin function (i.e. Arduino)
+}
+
+void Thorlabs_PD50LE::Thorlabs_I2C_end() {
+	//Implement this in a parent class or modify for your platform
+	
+	//Used if your platform has an I2C transaction end function (i.e. Arduino)
+}
+
+void Thorlabs_PD50LE::Thorlabs_I2C_setup() {
+	//Implement this in a parent class or modify for your platform
+
+	//Platform specific startup code, i.e. setting pins, clock speed, etc
 }
 
 

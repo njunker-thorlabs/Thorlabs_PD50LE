@@ -7,12 +7,14 @@
  *      (this one is VERY work in progress, will be adding features down the road)
  */
 
-#ifndef THORLABS_PD50LE_INC_PD50LE_LIB_H_
-#define THORLABS_PD50LE_INC_PD50LE_LIB_H_
+#ifndef INC_PD50LE_LIB_H_
+#define INC_PD50LE_LIB_H_
 
-#include <main.h>
+#include <cstdint> //for uint8_t, etc
+#include <cstddef> //for size_t
+#include <cmath> //for abs, signbit, etc
 
-extern I2C_HandleTypeDef hi2c1;
+//extern I2C_HandleTypeDef hi2c1;
 
 #define PD50LE_DEFAULT_ADDR 0x0C
 
@@ -39,7 +41,7 @@ public:
 	bool DAC_ERRLTCH;
 
 	//Initialize object with I2C instance and address
-	bool begin(uint8_t addr = PD50LE_DEFAULT_ADDR, I2C_HandleTypeDef i2c_instance = hi2c1);
+	void begin(uint8_t addr = PD50LE_DEFAULT_ADDR);
 
 	//Enable the driver
 	bool enable();
@@ -59,13 +61,23 @@ public:
 	//Read status register. Updates VOUT_LOCK and DAC_ERRLTCH bits.
 	void updateStatus();
 
+protected:
+
+	uint8_t _addr;
+	float _lsb;
+
+	uint8_t Thorlabs_I2C_write(uint8_t *buf, size_t size) __attribute__((weak));
+
+	void Thorlabs_I2C_read(uint8_t *buf, size_t size) __attribute__((weak));
+
+	void Thorlabs_I2C_begin() __attribute__((weak));
+
+	void Thorlabs_I2C_end() __attribute__((weak));
+
+	void Thorlabs_I2C_setup() __attribute__((weak));
 
 
 private:
-	uint8_t _addr;
-	I2C_HandleTypeDef _i2c_instance;
-
-	float _lsb;
 
 	bool write_register(uint8_t reg, uint8_t data);
 	uint8_t read_register(uint8_t reg);
