@@ -12,7 +12,7 @@
 
 #include <cstdint> //for uint8_t, etc
 #include <cstddef> //for size_t
-#include <cmath> //for abs, signbit, etc
+#include <math.h> //for abs, signbit, etc
 
 //extern I2C_HandleTypeDef hi2c1;
 
