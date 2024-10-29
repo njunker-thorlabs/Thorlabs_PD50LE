@@ -66,15 +66,15 @@ protected:
 	uint8_t _addr;
 	float _lsb;
 
-	uint8_t Thorlabs_I2C_write(uint8_t *buf, size_t size) __attribute__((weak));
+	virtual uint8_t Thorlabs_I2C_write(uint8_t *buf, size_t size);
 
-	void Thorlabs_I2C_read(uint8_t *buf, size_t size) __attribute__((weak));
+	virtual void Thorlabs_I2C_read(uint8_t *buf, size_t size);
 
-	void Thorlabs_I2C_begin() __attribute__((weak));
+	virtual void Thorlabs_I2C_begin();
 
-	void Thorlabs_I2C_end() __attribute__((weak));
+	virtual void Thorlabs_I2C_end();
 
-	void Thorlabs_I2C_setup() __attribute__((weak));
+	virtual void Thorlabs_I2C_setup();
 
 
 private:
