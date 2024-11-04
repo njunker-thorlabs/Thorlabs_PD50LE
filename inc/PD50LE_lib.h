@@ -61,6 +61,8 @@ public:
 	//Read status register. Updates VOUT_LOCK and DAC_ERRLTCH bits.
 	void updateStatus();
 
+	virtual ~Thorlabs_PD50LE(){}
+
 protected:
 
 	uint8_t _addr;
