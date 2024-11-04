@@ -136,6 +136,7 @@ uint8_t Thorlabs_PD50LE::Thorlabs_I2C_write(uint8_t *buf, size_t size) {
 
 	//Take in an array of single bytes (buf) and length
 	//Return length of bytes successfully transmitted
+	return 0;
 }
 
 void Thorlabs_PD50LE::Thorlabs_I2C_read(uint8_t *buf, size_t size) {
